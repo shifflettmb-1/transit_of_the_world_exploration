@@ -20,11 +20,15 @@ systems_df=pd.read_csv("../data/systems.csv")
 track_lines_df=pd.read_csv("../data/track_lines.csv")
 tracks_df=pd.read_csv("../data/tracks.csv")
 
-# Get coordinates for lat long in cities
-cities_df['Long']=cities_df['coords'].apply(lambda x: x.split('POINT(')[1].split(' ')[0])
-cities_df['Lat']=cities_df['coords'].apply(lambda x: x.split('POINT(')[1].split(' ')[1].split(')')[0])
-cities_df=cities_df.drop('coords', axis=1)
-cities_df.head()
+#Data Cleaning Cities DF
+cities_df["city_long"] = cities_df["coords"].apply(lambda x: x.split('POINT(')[1].split(' ')[0])
+cities_df["city_lat"] = cities_df["coords"].apply(lambda x: x.split('POINT(')[1].split(' ')[1].split(")")[0])
+cities_df["start_year"] = cities_df["start_year"].fillna(0)
+cities_df["city_id"] = cities_df["id"]
+cities_df["city_name"] = cities_df["name"]
+cities_df["city_url_name"] = cities_df["url_name"]
+cities_df = cities_df.drop(["country_state", "coords", "id", "name", "url_name"], axis = 1)
+cities_df.head(5)
 
 # split lat/long list in tracks_df
 #Data Cleaning track_df
@@ -75,19 +79,8 @@ shortest_tracks.plot.barh(color='lightcoral')
 plt.ylabel('Track ID')
 plt.xlabel('Length (km)')
 plt.title("Shortest 10 tracks in London", size=20)
-
 plt.tight_layout()
 plt.show()
-
-#Data Cleaning Cities DF
-cities_df["city_long"] = cities_df["coords"].apply(lambda x: x.split('POINT(')[1].split(' ')[0])
-cities_df["city_lat"] = cities_df["coords"].apply(lambda x: x.split('POINT(')[1].split(' ')[1].split(")")[0])
-cities_df["start_year"] = cities_df["start_year"].fillna(0)
-cities_df["city_id"] = cities_df["id"]
-cities_df["city_name"] = cities_df["name"]
-cities_df["city_url_name"] = cities_df["url_name"]
-cities_df = cities_df.drop(["country_state", "coords", "id", "name", "url_name"], axis = 1)
-cities_df.head(5)
 
 #Data Cleaning Lines DF
 lines_df["lines_id"] = lines_df['id']
@@ -163,8 +156,7 @@ grp_six = merged_l_c_stl_df.groupby("city_name")["lines_id"].count()
 
 fig, axs = plt.subplots(5,1, figsize=(20,20))
 
-#make first TOP blue and BOTTOM green
-#State col x-axis, larceny theft y-axis colors first half blue sencond half green
+#Bar graphs
 axs[0].bar(grp_one.index, grp_one.values, color = "blue")
 axs[1].bar(grp_two.index, grp_two.values, color = "green")
 axs[2].bar(grp_four.index, grp_four.values, color = "orange")
